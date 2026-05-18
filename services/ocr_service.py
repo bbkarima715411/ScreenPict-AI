@@ -143,3 +143,29 @@ def extract_ocr_numbers(image: Image.Image) -> list[str]:
             numbers.extend(re.findall(r"\d{3,}", raw_text))
 
     return sorted(set(numbers), key=len, reverse=True)
+
+
+def extract_ocr_text_items(image: Image.Image) -> list[str]:
+    items = []
+    configs = [
+        "--psm 6",
+        "--psm 11",
+        "--psm 12",
+    ]
+    patterns = [
+        r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+",
+        r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b",
+        r"\b\d{4}[./-]\d{1,2}[./-]\d{1,2}\b",
+        r"\+?\d[\d\s().-]{6,}\d",
+        r"\b[A-Z]{2,}[-_/]?[A-Z0-9]{3,}\b",
+        r"\b\d{8,14}\b",
+    ]
+
+    for variant in build_ocr_variants(image):
+        for config in configs:
+            raw_text = pytesseract.image_to_string(variant, config=config)
+            for pattern in patterns:
+                items.extend(re.findall(pattern, raw_text, flags=re.IGNORECASE))
+
+    cleaned_items = [item.strip() for item in items if item.strip()]
+    return sorted(set(cleaned_items), key=len, reverse=True)

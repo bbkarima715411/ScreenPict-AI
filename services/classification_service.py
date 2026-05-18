@@ -1,9 +1,44 @@
 import re
 
+from services.ml_service import predict_text_type
+
 
 def classify_number(number: str, source: str) -> dict[str, str | int]:
+    ml_prediction = predict_text_type(number)
+    if ml_prediction and ml_prediction["confiance"] >= 65 and source != "Code-barres":
+        return {
+            "numero": number.strip(),
+            "type": ml_prediction["type"],
+            "confiance": ml_prediction["confiance"],
+            "methode": ml_prediction["methode"],
+        }
+
     cleaned_number = re.sub(r"\D", "", number)
     length = len(cleaned_number)
+
+    if re.fullmatch(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", number.strip(), flags=re.IGNORECASE):
+        return {
+            "numero": number.strip(),
+            "type": "Email",
+            "confiance": 92,
+            "methode": f"{source} + règle : format email",
+        }
+
+    if re.fullmatch(r"\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{4}[./-]\d{1,2}[./-]\d{1,2}", number.strip()):
+        return {
+            "numero": number.strip(),
+            "type": "Date",
+            "confiance": 88,
+            "methode": f"{source} + règle : format date",
+        }
+
+    if re.fullmatch(r"[A-Z]{2,}[-_/]?[A-Z0-9]{3,}", number.strip(), flags=re.IGNORECASE):
+        return {
+            "numero": number.strip(),
+            "type": "Référence produit",
+            "confiance": 84,
+            "methode": f"{source} + règle : référence alphanumérique",
+        }
 
     if length == 10 and cleaned_number.startswith(("06", "07")):
         return {
@@ -54,7 +89,7 @@ def classify_number(number: str, source: str) -> dict[str, str | int]:
         }
 
     return {
-        "numero": cleaned_number,
+        "numero": cleaned_number or number.strip(),
         "type": "Inconnu",
         "confiance": 45,
         "methode": f"{source} + règle IA : motif non reconnu",

@@ -10,7 +10,7 @@ from services.barcode_service import extract_barcode_numbers
 from services.classification_service import analyze_numbers, classify_number
 from services.config import ALLOWED_EXTENSIONS, UPLOAD_DIR
 from services.export_service import export_saved_numbers_to_excel
-from services.ocr_service import configure_tesseract, extract_ocr_numbers
+from services.ocr_service import configure_tesseract, extract_ocr_text_items
 from services.storage_service import delete_saved_number, ensure_directories, read_saved_numbers, save_results
 
 app = Flask(__name__)
@@ -60,9 +60,9 @@ def index():
 
         try:
             image = Image.open(image_path)
-            ocr_numbers = extract_ocr_numbers(image)
+            ocr_items = extract_ocr_text_items(image)
             barcode_numbers = extract_barcode_numbers(image_path)
-            analysis_results = analyze_numbers(ocr_numbers, barcode_numbers)
+            analysis_results = analyze_numbers(ocr_items, barcode_numbers)
         except pytesseract.TesseractNotFoundError:
             flash("Tesseract OCR n'est pas installé ou n'est pas accessible dans le PATH Windows.", "error")
         except Exception as error:
