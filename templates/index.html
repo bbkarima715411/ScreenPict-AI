@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ScreenPict AI - Reconnaissance intelligente de numéros</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <div>
+                <h1>ScreenPict AI</h1>
+                <p class="subtitle">Analysez une photo, vérifiez le numéro proposé, corrigez si besoin, puis enregistrez uniquement une donnée validée.</p>
+            </div>
+            <a class="secondary-button" href="{{ url_for('export_csv') }}">Exporter</a>
+        </section>
+
+        <section class="steps">
+            <article>
+                <span>1</span>
+                <strong>Importer</strong>
+            </article>
+            <article>
+                <span>2</span>
+                <strong>Analyser</strong>
+            </article>
+            <article>
+                <span>3</span>
+                <strong>Valider</strong>
+            </article>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card upload-card">
+            <div class="section-header">
+                <h2>Nouvelle analyse</h2>
+                <p>Photo, étiquette, colis ou document fournisseur</p>
+            </div>
+            <form id="analysis-form" method="post" enctype="multipart/form-data">
+                <label class="file-zone">
+                    <span>Glissez ou sélectionnez une photo</span>
+                    <small>Formats acceptés : PNG, JPG, JPEG, BMP, TIFF ou WEBP</small>
+                    <input id="photo-input" type="file" name="photo" accept="image/*" required>
+                </label>
+                <img id="local-preview" class="preview-image local-preview" alt="Prévisualisation de la photo sélectionnée">
+                <button type="submit">Analyser la photo</button>
+                <div id="analysis-progress" class="analysis-progress" aria-live="polite">
+                    <span class="progress-spinner"></span>
+                    <div>
+                        <strong>Analyse en cours</strong>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        {% if analysis_results %}
+            <section class="card">
+                <div class="section-header">
+                    <h2>Résultat proposé</h2>
+                    <p>À vérifier avant enregistrement</p>
+                </div>
+                {% if uploaded_filename %}
+                    <p class="muted">Fichier : {{ uploaded_filename }}</p>
+                {% endif %}
+                {% if preview_url %}
+                    <div class="preview-layout">
+                        <img class="preview-image" src="{{ preview_url }}" alt="Photo analysée">
+                        <form class="confirmation-form" method="post">
+                            <input type="hidden" name="action" value="confirm">
+                            <input type="hidden" name="uploaded_filename" value="{{ uploaded_filename }}">
+                            <label>
+                                <span>Numéro à enregistrer</span>
+                                <input type="text" name="confirmed_number" value="{{ analysis_results[0].numero }}" required>
+                            </label>
+                            <button type="submit">Valider et enregistrer</button>
+                            <p class="muted">Corrigez le numéro si besoin avant de l'ajouter à la liste.</p>
+                        </form>
+                    </div>
+                {% endif %}
+                <div class="result-grid">
+                    {% for result in analysis_results %}
+                        <article class="result-card">
+                            <strong class="result-number">{{ result.numero }}</strong>
+                            <span class="type-pill">{{ result.type }}</span>
+                            <div class="confidence">
+                                <span>Confiance</span>
+                                <strong>{{ result.confiance }}%</strong>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        {% if preview_url and not analysis_results %}
+            <section class="card">
+                <div class="section-header">
+                    <h2>Validation manuelle</h2>
+                    <p>Aucune détection automatique fiable</p>
+                </div>
+                <div class="preview-layout">
+                    <img class="preview-image" src="{{ preview_url }}" alt="Photo analysée">
+                    <form class="confirmation-form" method="post">
+                        <input type="hidden" name="action" value="confirm">
+                        <input type="hidden" name="uploaded_filename" value="{{ uploaded_filename }}">
+                        <label>
+                            <span>Numéro lu sur l'image</span>
+                            <input type="text" name="confirmed_number" placeholder="Saisir le numéro visible" required>
+                        </label>
+                        <button type="submit">Valider et enregistrer</button>
+                        <p class="muted">L'analyse automatique n'a rien trouvé, mais vous pouvez enrichir la liste manuellement.</p>
+                    </form>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="card">
+            <div class="section-header">
+                <h2>Liste enregistrée</h2>
+                <p>{{ saved_numbers | list | length }} élément(s)</p>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Fichier</th>
+                            <th>Numéro</th>
+                            <th>Type détecté</th>
+                            <th>Confiance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in saved_numbers %}
+                            <tr>
+                                <td>{{ row.date }}</td>
+                                <td>{{ row.fichier }}</td>
+                                <td><strong>{{ row.numero }}</strong></td>
+                                <td>{{ row.type or "Ancien résultat" }}</td>
+                                <td>{{ row.confiance or "-" }}{% if row.confiance %}%{% endif %}</td>
+                                <td>
+                                    <form class="delete-form" method="post" action="{{ url_for('delete_number', row_index=row.row_index) }}">
+                                        <button class="delete-button" type="submit" aria-label="Supprimer ce numéro" title="Supprimer">
+                                            🗑
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="empty">Aucun numéro enregistré pour le moment.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="delete-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+            <div class="modal-icon">🗑</div>
+            <h2 id="delete-modal-title">Supprimer ce numéro ?</h2>
+            <p>Cette action retirera définitivement cette ligne de la liste enregistrée.</p>
+            <div class="modal-actions">
+                <button id="cancel-delete" class="secondary-action" type="button">Annuler</button>
+                <button id="confirm-delete" class="danger-action" type="button">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
