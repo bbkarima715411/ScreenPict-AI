@@ -1,1 +1,5 @@
 date;fichier;numero;type;confiance;methode
+2026-05-18 14:59:29;20260518145909_Capture_decran_2026-05-05_152607.png;662;Inconnu;45;Validation humaine + règle IA : motif non reconnu
+2026-05-18 15:00:37;20260518150012_Capture_decran_2026-05-18_114528.png;0123456789;Téléphone fixe;90;Validation humaine + règle IA : préfixe fixe FR + longueur
+2026-05-18 15:08:54;20260518150848_Capture_decran_2026-05-18_114610.png;0104035999100314;Référence fournisseur ou suivi;72;Validation humaine + règle IA : identifiant long
+2026-05-18 15:14:56;20260518151433_Capture_decran_2026-05-18_151059.png;1234567880;Référence interne possible;64;Validation humaine + règle IA : longueur moyenne
