@@ -42,6 +42,39 @@ body {
     margin-bottom: 18px;
 }
 
+.intelligence-panel {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.intelligence-panel article {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid var(--primary-border);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #ffffff, #edf9f2);
+    box-shadow: 0 10px 24px rgba(22, 138, 82, 0.08);
+}
+
+.intelligence-panel span {
+    width: fit-content;
+    border-radius: 999px;
+    background: var(--primary);
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.intelligence-panel strong {
+    font-size: 15px;
+}
+
 .eyebrow {
     margin: 0 0 8px;
     color: var(--primary);
@@ -317,11 +350,13 @@ button:hover,
     border: 1px solid var(--border);
     border-radius: 16px;
     background: linear-gradient(145deg, #ffffff, #fbfefc);
+    box-shadow: 0 12px 26px rgba(16, 35, 27, 0.05);
 }
 
 .result-number {
     color: #0f6f41;
-    font-size: 24px;
+    overflow-wrap: anywhere;
+    font-size: 23px;
 }
 
 .type-pill {
@@ -347,6 +382,10 @@ button:hover,
 .confidence span,
 .result-card small {
     color: var(--muted);
+}
+
+.result-card small {
+    line-height: 1.45;
 }
 
 .section-header {
@@ -377,6 +416,10 @@ th {
     color: var(--muted);
     font-size: 13px;
     text-transform: uppercase;
+}
+
+tbody tr:hover {
+    background: #fbfefc;
 }
 
 .delete-form {

@@ -1,5 +1,6 @@
 date;fichier;numero;type;confiance;methode
-2026-05-18 14:59:29;20260518145909_Capture_decran_2026-05-05_152607.png;662;Inconnu;45;Validation humaine + règle IA : motif non reconnu
-2026-05-18 15:00:37;20260518150012_Capture_decran_2026-05-18_114528.png;0123456789;Téléphone fixe;90;Validation humaine + règle IA : préfixe fixe FR + longueur
-2026-05-18 15:08:54;20260518150848_Capture_decran_2026-05-18_114610.png;0104035999100314;Référence fournisseur ou suivi;72;Validation humaine + règle IA : identifiant long
-2026-05-18 15:14:56;20260518151433_Capture_decran_2026-05-18_151059.png;1234567880;Référence interne possible;64;Validation humaine + règle IA : longueur moyenne
+2026-05-19 10:34:33;20260519103201_Capture_decran_2026-05-18_114618.png;59011234123457;Référence fournisseur ou suivi;72;Validation humaine + règle IA : identifiant long
+2026-05-19 10:34:33;20260519103201_Capture_decran_2026-05-18_114618.png;59011234123457;Référence fournisseur ou suivi;72;Validation humaine + règle IA : identifiant long
+2026-05-19 10:39:09;20260519103849_Capture_decran_2026-05-18_151111.png;0123456789;Téléphone fixe;90;Validation humaine + règle IA : préfixe fixe FR + longueur
+2026-05-19 10:39:38;20260519103925_Capture_decran_2026-05-18_114610.png;0104035999100314;Référence fournisseur ou suivi;72;Validation humaine + règle IA : identifiant long
+2026-05-19 11:07:55;20260519110751_Capture_decran_2026-05-18_114528.png;0123456789012345678901234567890123456789;Inconnu;45;Validation humaine + règle IA : motif non reconnu

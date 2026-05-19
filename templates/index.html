@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ScreenPict AI - Reconnaissance intelligente de numéros</title>
+    <title>ScreenPict AI - Assistant intelligent d'analyse d'image</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script defer src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
@@ -11,10 +11,11 @@
     <main class="page">
         <section class="hero">
             <div>
+            
                 <h1>ScreenPict AI</h1>
-                <p class="subtitle">Analysez une photo, vérifiez le numéro proposé, corrigez si besoin, puis enregistrez uniquement une donnée validée.</p>
+                <p class="subtitle">Transformez une image en informations exploitables : téléphones, emails, dates, références produit, codes-barres et autres données utiles.</p>
             </div>
-            <a class="secondary-button" href="{{ url_for('export_csv') }}">Exporter</a>
+            <a class="secondary-button" href="{{ url_for('export_csv') }}">Exporter l'historique</a>
         </section>
 
         <section class="steps">
@@ -24,7 +25,7 @@
             </article>
             <article>
                 <span>2</span>
-                <strong>Analyser</strong>
+                <strong>Analyser avec l'IA</strong>
             </article>
             <article>
                 <span>3</span>
@@ -44,21 +45,22 @@
 
         <section class="card upload-card">
             <div class="section-header">
-                <h2>Nouvelle analyse</h2>
-                <p>Photo, étiquette, colis ou document fournisseur</p>
+                <h2>Nouvelle analyse intelligente</h2>
+                <p>Importez une photo, une étiquette, un colis ou un document fournisseur.</p>
             </div>
             <form id="analysis-form" method="post" enctype="multipart/form-data">
                 <label class="file-zone">
-                    <span>Glissez ou sélectionnez une photo</span>
+                    <span>Glissez ou sélectionnez une image à analyser</span>
                     <small>Formats acceptés : PNG, JPG, JPEG, BMP, TIFF ou WEBP</small>
                     <input id="photo-input" type="file" name="photo" accept="image/*" required>
                 </label>
                 <img id="local-preview" class="preview-image local-preview" alt="Prévisualisation de la photo sélectionnée">
-                <button type="submit">Analyser la photo</button>
+                <button type="submit">Analyser avec l'IA</button>
                 <div id="analysis-progress" class="analysis-progress" aria-live="polite">
                     <span class="progress-spinner"></span>
                     <div>
-                        <strong>Analyse en cours</strong>
+                        <strong>Analyse intelligente en cours</strong>
+                        <p>OCR, code-barres et classification des informations détectées.</p>
                     </div>
                 </div>
             </form>
@@ -67,8 +69,8 @@
         {% if analysis_results %}
             <section class="card">
                 <div class="section-header">
-                    <h2>Résultat proposé</h2>
-                    <p>À vérifier avant enregistrement</p>
+                    <h2>Informations détectées</h2>
+                    <p>Vérifiez les propositions avant d'enregistrer une information validée.</p>
                 </div>
                 {% if uploaded_filename %}
                     <p class="muted">Fichier : {{ uploaded_filename }}</p>
@@ -80,11 +82,11 @@
                             <input type="hidden" name="action" value="confirm">
                             <input type="hidden" name="uploaded_filename" value="{{ uploaded_filename }}">
                             <label>
-                                <span>Numéro à enregistrer</span>
+                                <span>Information à enregistrer</span>
                                 <input type="text" name="confirmed_number" value="{{ analysis_results[0].numero }}" required>
                             </label>
                             <button type="submit">Valider et enregistrer</button>
-                            <p class="muted">Corrigez le numéro si besoin avant de l'ajouter à la liste.</p>
+                            <p class="muted">Corrigez la valeur si besoin avant de l'ajouter à l'historique.</p>
                         </form>
                     </div>
                 {% endif %}
@@ -97,6 +99,7 @@
                                 <span>Confiance</span>
                                 <strong>{{ result.confiance }}%</strong>
                             </div>
+                            <small>{{ result.methode }}</small>
                         </article>
                     {% endfor %}
                 </div>
@@ -107,7 +110,7 @@
             <section class="card">
                 <div class="section-header">
                     <h2>Validation manuelle</h2>
-                    <p>Aucune détection automatique fiable</p>
+                    <p>Aucune information fiable détectée automatiquement.</p>
                 </div>
                 <div class="preview-layout">
                     <img class="preview-image" src="{{ preview_url }}" alt="Photo analysée">
@@ -115,11 +118,11 @@
                         <input type="hidden" name="action" value="confirm">
                         <input type="hidden" name="uploaded_filename" value="{{ uploaded_filename }}">
                         <label>
-                            <span>Numéro lu sur l'image</span>
-                            <input type="text" name="confirmed_number" placeholder="Saisir le numéro visible" required>
+                            <span>Information lue sur l'image</span>
+                            <input type="text" name="confirmed_number" placeholder="Saisir l'information visible" required>
                         </label>
                         <button type="submit">Valider et enregistrer</button>
-                        <p class="muted">L'analyse automatique n'a rien trouvé, mais vous pouvez enrichir la liste manuellement.</p>
+                        <p class="muted">Vous pouvez enrichir l'historique manuellement pour améliorer progressivement la base de données.</p>
                     </form>
                 </div>
             </section>
@@ -127,8 +130,8 @@
 
         <section class="card">
             <div class="section-header">
-                <h2>Liste enregistrée</h2>
-                <p>{{ saved_numbers | list | length }} élément(s)</p>
+                <h2>Historique des informations validées</h2>
+                <p>{{ saved_numbers | list | length }} élément(s) enregistré(s)</p>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -136,7 +139,7 @@
                         <tr>
                             <th>Date</th>
                             <th>Fichier</th>
-                            <th>Numéro</th>
+                            <th>Information</th>
                             <th>Type détecté</th>
                             <th>Confiance</th>
                             <th>Action</th>
@@ -152,7 +155,7 @@
                                 <td>{{ row.confiance or "-" }}{% if row.confiance %}%{% endif %}</td>
                                 <td>
                                     <form class="delete-form" method="post" action="{{ url_for('delete_number', row_index=row.row_index) }}">
-                                        <button class="delete-button" type="submit" aria-label="Supprimer ce numéro" title="Supprimer">
+                                        <button class="delete-button" type="submit" aria-label="Supprimer cette information" title="Supprimer">
                                             🗑
                                         </button>
                                     </form>
@@ -160,7 +163,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="6" class="empty">Aucun numéro enregistré pour le moment.</td>
+                                <td colspan="6" class="empty">Aucune information enregistrée pour le moment.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -172,8 +175,8 @@
     <div id="delete-modal" class="modal-overlay" aria-hidden="true">
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
             <div class="modal-icon">🗑</div>
-            <h2 id="delete-modal-title">Supprimer ce numéro ?</h2>
-            <p>Cette action retirera définitivement cette ligne de la liste enregistrée.</p>
+            <h2 id="delete-modal-title">Supprimer cette information ?</h2>
+            <p>Cette action retirera définitivement cette ligne de l'historique enregistré.</p>
             <div class="modal-actions">
                 <button id="cancel-delete" class="secondary-action" type="button">Annuler</button>
                 <button id="confirm-delete" class="danger-action" type="button">Supprimer</button>

@@ -34,12 +34,12 @@ def index():
             uploaded_filename = request.form.get("uploaded_filename", "").strip()
 
             if not confirmed_number:
-                flash("Veuillez saisir ou confirmer un numéro avant l'enregistrement.", "error")
+                flash("Veuillez saisir ou confirmer une information avant l'enregistrement.", "error")
                 return redirect(url_for("index"))
 
             analysis_results = [classify_number(confirmed_number, "Validation humaine")]
             save_results(uploaded_filename or "saisie-manuelle", analysis_results)
-            flash("Numéro validé et enregistré.", "success")
+            flash("Information validée et enregistrée.", "success")
             return redirect(url_for("index"))
 
         uploaded_file = request.files.get("photo")
@@ -71,7 +71,7 @@ def index():
         if analysis_results:
             flash(f"{len(analysis_results)} résultat(s) proposé(s). Vérifiez avant d'enregistrer.", "success")
         else:
-            flash("Aucun chiffre reconnu automatiquement. Vous pouvez saisir le numéro manuellement depuis l'image.", "warning")
+            flash("Aucune information fiable reconnue automatiquement. Vous pouvez la saisir manuellement depuis l'image.", "warning")
 
     saved_numbers = [
         {**row, "row_index": index}
@@ -94,9 +94,9 @@ def uploaded_file(filename: str):
 @app.route("/delete/<int:row_index>", methods=["POST"])
 def delete_number(row_index: int):
     if delete_saved_number(row_index):
-        flash("Numéro supprimé de la liste.", "success")
+        flash("Information supprimée de l'historique.", "success")
     else:
-        flash("Impossible de supprimer ce numéro.", "error")
+        flash("Impossible de supprimer cette information.", "error")
 
     return redirect(url_for("index"))
 
