@@ -15,6 +15,7 @@ def classify_number(number: str, source: str) -> dict[str, str | int]:
 
     cleaned_number = re.sub(r"\D", "", number)
     length = len(cleaned_number)
+    normalized_number = number.strip().replace(" ", "")
 
     if re.fullmatch(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", number.strip(), flags=re.IGNORECASE):
         return {
@@ -38,6 +39,22 @@ def classify_number(number: str, source: str) -> dict[str, str | int]:
             "type": "Référence produit",
             "confiance": 84,
             "methode": f"{source} + règle : référence alphanumérique",
+        }
+
+    if length == 10 and cleaned_number.startswith("04"):
+        return {
+            "numero": cleaned_number,
+            "type": "Téléphone belge",
+            "confiance": 92,
+            "methode": f"{source} + règle : préfixe mobile belge + longueur",
+        }
+
+    if re.fullmatch(r"(?:\+|00)\d{8,15}", normalized_number):
+        return {
+            "numero": normalized_number,
+            "type": "Téléphone international",
+            "confiance": 90,
+            "methode": f"{source} + règle : indicatif international",
         }
 
     if length == 10 and cleaned_number.startswith(("06", "07")):
